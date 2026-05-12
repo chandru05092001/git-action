@@ -1,6 +1,7 @@
-name: Test
+name: Practice Workflow
 
-on: [push]
+on:
+  push:
 
 jobs:
   build:
@@ -10,13 +11,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
+      - name: Show Directory
+        run: pwd
 
-      - name: Install Packages
-        run: npm install
+      - name: Show Files
+        run: ls -la
+
+      - name: Print Message
+        run: echo "Build Started"
 
       - name: Run App
         run: node app.js
+
+      - name: Build Finished
+        run: echo "Build Completed"
