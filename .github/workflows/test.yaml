@@ -1,27 +1,38 @@
-name: Practice Workflow
+name: Build, Push and Deploy
 
 on:
   push:
+    branches: [main]
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Show Directory
-        run: pwd
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Show Files
-        run: ls -la
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: chandru0509/my-app:latest
 
-      - name: Print Message
-        run: echo "Build Started"
-
-      - name: Run App
-        run: node app.js
-
-      - name: Build Finished
-        run: echo "Build Completed"
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker pull chandru0509/my-app:latest
+            docker stop my-app || true
+            docker rm my-app || true
+            docker run -d --name my-app -p 80:3000 chandru0509/my-app:latest
