@@ -35,4 +35,4 @@ jobs:
             docker pull chandru0509/my-app:latest
             docker stop my-app || true
             docker rm my-app || true
-            docker run -d --name my-app -p 80:3000 chandru0509/my-app:latest
+            docker run -d --name my-app -p 80:3000 chandru0509/my-app:v1
